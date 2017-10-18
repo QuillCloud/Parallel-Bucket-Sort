@@ -46,7 +46,7 @@ void BucketSort::sort(unsigned int numCores) {
         auto num = numbersToSort.back();
         numbersToSort.pop_back();
         auto first_digit = num;
-        while (first_digit > 10) {
+        while (first_digit >= 10) {
             first_digit /= 10;
         }
         if ( buckets.find(first_digit) == buckets.end() ) {
@@ -55,39 +55,43 @@ void BucketSort::sort(unsigned int numCores) {
         buckets.at(first_digit).push_back(num);
     }
     auto sortFunc = [&buckets](std::vector<unsigned int> bucket_list) {
+        clock_t begin = clock();
         std::for_each(bucket_list.begin(), bucket_list.end(), [&buckets] (auto& i) {
             std::sort(buckets[i].begin(), buckets[i].end(), [](const unsigned int& x, const unsigned int& y){
                 return aLessB(x,y,0);
             } );
         });
+        clock_t end = clock();
+        double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+        cout << "time for join : " << elapsed_secs << endl;
     };
     auto base_num = buckets.size() / numCores;
     auto extra_num = buckets.size() % numCores;
     unsigned int counter = 0;
 
     std::vector<unsigned int> l;
-    std::vector<std::thread> containerOfThreads;
+    std::vector<std::shared_ptr<std::thread>> containerOfThreads;
     for (auto it = buckets.begin(); it != buckets.end(); ++it) {
+        cout << it->first << " size " << it->second.size() << endl;
         l.push_back(it->first);
         ++counter;
         if (base_num == counter && extra_num == 0) {
-            containerOfThreads.push_back(std::thread(sortFunc, l));
+            cout << counter << endl;
+            containerOfThreads.push_back(std::make_shared<std::thread>(sortFunc, l));
             l.clear();
             counter = 0;
         } else if (base_num < counter){
-            containerOfThreads.push_back(std::thread(sortFunc, l));
+            cout << counter << endl;
+            containerOfThreads.push_back(std::make_shared<std::thread>(sortFunc, l));
             l.clear();
             counter = 0;
             --extra_num;
         }
     }
-    clock_t begin = clock();
+
     for (auto& t : containerOfThreads) {
-        t.join();
+        t->join();
     }
-    clock_t end = clock();
-    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    cout << "time : " << elapsed_secs << endl;
     for (auto it = buckets.begin(); it != buckets.end(); ++it) {
         for (auto& i : it->second) {
             numbersToSort.push_back(i);
