@@ -5,6 +5,8 @@
 #include <map>
 #include <iostream>
 #include <thread>
+#include <ctime>
+using namespace std;
 
 using std::cout;
 using std::endl;
@@ -62,6 +64,7 @@ void BucketSort::sort(unsigned int numCores) {
     auto base_num = buckets.size() / numCores;
     auto extra_num = buckets.size() % numCores;
     unsigned int counter = 0;
+
     std::vector<unsigned int> l;
     std::vector<std::thread> containerOfThreads;
     for (auto it = buckets.begin(); it != buckets.end(); ++it) {
@@ -78,9 +81,13 @@ void BucketSort::sort(unsigned int numCores) {
             --extra_num;
         }
     }
+    clock_t begin = clock();
     for (auto& t : containerOfThreads) {
         t.join();
     }
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    cout << "time : " << elapsed_secs << endl;
     for (auto it = buckets.begin(); it != buckets.end(); ++it) {
         for (auto& i : it->second) {
             numbersToSort.push_back(i);
