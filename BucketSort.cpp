@@ -67,30 +67,23 @@ void BucketSort::sort(unsigned int numCores) {
     };
     auto base_num = buckets.size() / numCores;
     auto extra_num = buckets.size() % numCores;
-    unsigned int counter = 0;
-
-    std::vector<unsigned int> l;
-    std::vector<std::shared_ptr<std::thread>> containerOfThreads;
-    for (auto it = buckets.begin(); it != buckets.end(); ++it) {
-        cout << it->first << " size " << it->second.size() << endl;
-        l.push_back(it->first);
-        ++counter;
-        if (base_num == counter && extra_num == 0) {
-            cout << counter << endl;
-            containerOfThreads.push_back(std::make_shared<std::thread>(sortFunc, l));
-            l.clear();
-            counter = 0;
-        } else if (base_num < counter){
-            cout << counter << endl;
-            containerOfThreads.push_back(std::make_shared<std::thread>(sortFunc, l));
-            l.clear();
-            counter = 0;
-            --extra_num;
-        }
+    std::vector<std::vector<unsigned int>> l;
+    std::vector<unsigned long> l_size;
+    for (auto i = 0; i < numCores; ++i) {
+        l.push_back(std::vector<unsigned int>());
+        l_size.push_back(0);
     }
-
+    std::vector<std::thread> containerOfThreads;
+    for (auto it_m = buckets.begin(); it_m != buckets.end(); ++it_m) {
+        auto min_index = std::min_element(l_size.begin(),l_size.end()) - l_size.begin();
+        l[min_index].push_back(it_m->first);
+        l_size[min_index] += it_m->second.size();
+    }
+    for (auto& i : l) {
+        containerOfThreads.push_back(std::thread(sortFunc, i));
+    }
     for (auto& t : containerOfThreads) {
-        t->join();
+        t.join();
     }
     for (auto it = buckets.begin(); it != buckets.end(); ++it) {
         for (auto& i : it->second) {
