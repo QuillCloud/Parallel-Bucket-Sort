@@ -43,13 +43,14 @@ void BucketSort::sort(unsigned int numCores) {
     while (!numbersToSort.empty()) {
         auto num = numbersToSort.back();
         numbersToSort.pop_back();
-        auto tens = 1;
-        while (tens*10 < num)
-            tens *= 10;
-        if ( buckets.find(num / tens) == buckets.end() ) {
-            buckets.insert(std::pair<unsigned int, std::vector<unsigned int>>(num / tens, std::vector<unsigned int>()));
+        auto first_digit = num;
+        while (first_digit > 10) {
+            first_digit /= 10;
         }
-        buckets.at(num / tens).push_back(num);
+        if ( buckets.find(first_digit) == buckets.end() ) {
+            buckets.insert(std::pair<unsigned int, std::vector<unsigned int>>(first_digit, std::vector<unsigned int>()));
+        }
+        buckets.at(first_digit).push_back(num);
     }
     auto sortFunc = [&buckets](std::vector<unsigned int> bucket_list) {
         std::for_each(bucket_list.begin(), bucket_list.end(), [&buckets] (auto& i) {
@@ -60,7 +61,7 @@ void BucketSort::sort(unsigned int numCores) {
     };
     auto base_num = buckets.size() / numCores;
     auto extra_num = buckets.size() % numCores;
-    auto counter = 0;
+    unsigned int counter = 0;
     std::vector<unsigned int> l;
     std::vector<std::thread> containerOfThreads;
     for (auto it = buckets.begin(); it != buckets.end(); ++it) {
