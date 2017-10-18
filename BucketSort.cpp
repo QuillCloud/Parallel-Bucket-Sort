@@ -55,15 +55,11 @@ void BucketSort::sort(unsigned int numCores) {
         buckets.at(first_digit).push_back(num);
     }
     auto sortFunc = [&buckets](std::vector<unsigned int> bucket_list) {
-        clock_t begin = clock();
         std::for_each(bucket_list.begin(), bucket_list.end(), [&buckets] (auto& i) {
             std::sort(buckets[i].begin(), buckets[i].end(), [](const unsigned int& x, const unsigned int& y){
                 return aLessB(x,y,0);
             } );
         });
-        clock_t end = clock();
-        double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        cout << "time for join : " << elapsed_secs << endl;
     };
     std::vector<std::vector<unsigned int>> l;
     std::vector<unsigned long> l_size;
