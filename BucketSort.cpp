@@ -65,11 +65,9 @@ void BucketSort::sort(unsigned int numCores) {
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         cout << "time for join : " << elapsed_secs << endl;
     };
-    auto base_num = buckets.size() / numCores;
-    auto extra_num = buckets.size() % numCores;
     std::vector<std::vector<unsigned int>> l;
     std::vector<unsigned long> l_size;
-    for (auto i = 0; i < numCores; ++i) {
+    for (unsigned int i = 0; i < numCores; ++i) {
         l.push_back(std::vector<unsigned int>());
         l_size.push_back(0);
     }
