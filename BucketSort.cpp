@@ -64,11 +64,11 @@ void BucketSort::sort(unsigned int numCores) {
         l_size.push_back(0);
     }
     std::vector<std::thread> containerOfThreads;
-    for (auto it_m = buckets.begin(); it_m != buckets.end(); ++it_m) {
+    std::for_each(buckets.begin(), buckets.end(), [&l, &l_size] (auto& i) {
         auto min_index = std::min_element(l_size.begin(),l_size.end()) - l_size.begin();
-        l[min_index].push_back(it_m->first);
-        l_size[min_index] += it_m->second.size();
-    }
+        l[min_index].push_back(i.first);
+        l_size[min_index] += i.second.size();
+    });
     std::for_each(l.begin(), l.end(), [&containerOfThreads, &sortFunc] (auto& i) {
         containerOfThreads.push_back(std::thread(sortFunc, i));
     });
