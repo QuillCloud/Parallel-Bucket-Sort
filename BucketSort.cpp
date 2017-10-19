@@ -5,11 +5,7 @@
 #include <map>
 #include <iostream>
 #include <thread>
-#include <ctime>
-using namespace std;
 
-using std::cout;
-using std::endl;
 bool aLessB(const unsigned int& x, const unsigned int& y, unsigned int pow) {
 
     if (x == y) return false; // if the two numbers are the same then one is not less than the other
@@ -54,9 +50,9 @@ void BucketSort::sort(unsigned int numCores) {
         }
         buckets.at(first_digit).push_back(num);
     }
-    auto sortFunc = [&buckets](std::vector<unsigned int> bucket_list) {
+    auto sortFunc = [&buckets] (std::vector<unsigned int> bucket_list) {
         std::for_each(bucket_list.begin(), bucket_list.end(), [&buckets] (auto& i) {
-            std::sort(buckets[i].begin(), buckets[i].end(), [](const unsigned int& x, const unsigned int& y){
+            std::sort(buckets[i].begin(), buckets[i].end(), [] (const unsigned int& x, const unsigned int& y){
                 return aLessB(x,y,0);
             } );
         });
@@ -73,13 +69,13 @@ void BucketSort::sort(unsigned int numCores) {
         l[min_index].push_back(it_m->first);
         l_size[min_index] += it_m->second.size();
     }
-    for (auto& i : l) {
+    std::for_each(l.begin(), l.end(), [&containerOfThreads, &sortFunc] (auto& i) {
         containerOfThreads.push_back(std::thread(sortFunc, i));
-    }
-    for (auto& t : containerOfThreads) {
-        t.join();
-    }
-    for (auto it = buckets.begin(); it != buckets.end(); ++it) {
-        numbersToSort.insert(numbersToSort.end(), it->second.begin(), it->second.end());
-    }
+    });
+    std::for_each(containerOfThreads.begin(), containerOfThreads.end(), [] (auto& i) {
+        i.join();
+    });
+    std::for_each(buckets.begin(), buckets.end(), [&] (auto& i) {
+        numbersToSort.insert(numbersToSort.end(), i.second.begin(), i.second.end());
+    });
 }
