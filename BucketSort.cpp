@@ -38,7 +38,7 @@ bool aLessB(const unsigned int& x, const unsigned int& y, unsigned int pow) {
 
 void BucketSort::sort(unsigned int numCores) {
     // use a map as buckets
-    std::map<unsigned int, std::vector<unsigned>> buckets;
+    std::map<unsigned int, std::vector<unsigned int>> buckets;
     // distribute numbers into buckets
     while (!numbersToSort.empty()) {
         // get number
@@ -76,7 +76,7 @@ void BucketSort::sort(unsigned int numCores) {
     // store each thread
     std::vector<std::thread> containerOfThreads;
     // distribute buckets for each thread, each time add current bucket to the thread with smallest size
-    std::for_each(buckets.begin(), buckets.end(), [&l, &l_size] (std::pair<unsigned int, std::vector<unsigned>> i) {
+    std::for_each(buckets.begin(), buckets.end(), [&l, &l_size] (std::pair<const unsigned int, std::vector<unsigned int>>& i) {
         auto min_index = std::min_element(l_size.begin(),l_size.end()) - l_size.begin();
         l[min_index].push_back(i.first);
         l_size[min_index] += i.second.size();
@@ -90,7 +90,7 @@ void BucketSort::sort(unsigned int numCores) {
         i.join();
     });
     // combine the sorted buckets
-    std::for_each(buckets.begin(), buckets.end(), [&] (std::pair<unsigned int, std::vector<unsigned>>& i) {
+    std::for_each(buckets.begin(), buckets.end(), [&] (std::pair<const unsigned int, std::vector<unsigned int>> &i) {
         numbersToSort.insert(numbersToSort.end(), i.second.begin(), i.second.end());
     });
 }
