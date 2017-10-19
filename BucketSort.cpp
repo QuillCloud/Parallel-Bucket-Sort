@@ -80,8 +80,6 @@ void BucketSort::sort(unsigned int numCores) {
         t.join();
     }
     for (auto it = buckets.begin(); it != buckets.end(); ++it) {
-        for (auto& i : it->second) {
-            numbersToSort.push_back(i);
-        }
+        numbersToSort.insert(numbersToSort.end(), it->second.begin(), it->second.end());
     }
 }
