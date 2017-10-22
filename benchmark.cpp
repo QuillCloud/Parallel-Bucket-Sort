@@ -36,7 +36,6 @@ int main() {
     for (const auto &dataset : dataSets) {
         const auto &generator = dataset.first;
         const auto &desc = dataset.second;
-
         BucketSort b;
         std::vector<unsigned int> data;
         // insert random numbers into the sort object
@@ -47,7 +46,7 @@ int main() {
         b.sort(numCores); // ensure the cache is fair for each test
 
         // potentially could do i *= 2, not ++i
-        for (auto currentCores = 1U; currentCores <= numCores; ++currentCores) {
+        for (auto currentCores = 4U; currentCores <= numCores; ++currentCores) {
             std::cout << "Testing " << desc << " with " << currentCores << " core(s)" << std::endl;
             results << desc << ',' << currentCores;
             for (auto i = 0U; i < numreps; ++i) {
