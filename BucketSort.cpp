@@ -10,36 +10,7 @@
 typedef std::pair<unsigned int, std::vector<unsigned int>> pair;
 typedef std::pair<const unsigned int, std::vector<unsigned int>> pair_c;
 
-bool aLessB(const unsigned int& x, const unsigned int& y, unsigned int pow) {
-
-    if (x == y) return false; // if the two numbers are the same then one is not less than the other
-
-    unsigned int a = x;
-    unsigned int b = y;
-
-    // work out the digit we are currently comparing on.
-    if (pow == 0) {
-        while (a / 10 > 0) {
-            a = a / 10;
-        }
-        while (b / 10 > 0) {
-            b = b / 10;
-        }
-    } else {
-        while (a / 10 >= (unsigned int) std::round(std::pow(10,pow))) {
-            a = a / 10;
-        }
-        while (b / 10 >= (unsigned int) std::round(std::pow(10,pow))) {
-            b = b / 10;
-        }
-    }
-
-    if (a == b)
-        return aLessB(x,y,pow + 1);  // recurse if this digit is the same
-    else
-        return a < b;
-}
-
+// compare two unsigned integer in lexicographic order
 bool compare(const unsigned int& x, const unsigned int& y) {
     std::string s_x = std::to_string(x);
     std::string s_y = std::to_string(y);
