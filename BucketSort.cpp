@@ -55,10 +55,11 @@ void BucketSort::sort(unsigned int numCores) {
         auto num = numbersToSort.back();
         numbersToSort.pop_back();
         auto first_digit = num;
-        // get most significant digit
+        // get first two digit
         while (first_digit >= 100) {
             first_digit /= 10;
         }
+        // if only one digit, regard this number as number * 10
         if (first_digit < 10) {
             first_digit *= 10;
         }
@@ -93,10 +94,6 @@ void BucketSort::sort(unsigned int numCores) {
         auto min_index = std::min_element(l_size.begin(),l_size.end()) - l_size.begin();
         l[min_index].push_back(i.first);
         l_size[min_index] += i.second.size();
-        //std::cout << i.first << " size " << i.second.size() << std::endl;
-    }
-    for (auto& i : l_size) {
-        std::cout << "bucket number: " << i << std::endl;
     }
     // start each thread
     for (auto& i : l) {

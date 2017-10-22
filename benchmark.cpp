@@ -21,8 +21,8 @@ int main() {
         {[&] { return dist(mt); }, "Uniform random distribution"},
         {[&] { return (dist(mt) / 1000) * 1000; }, "Common value distribution"},
 //        {[&] { return reinterpret_cast<unsigned int>(floatdist(mt)); }, "Extreme distribution"},
-        {[] { return 0; }, "All zeros"},
-        {[] { return std::numeric_limits<unsigned int>::max(); }, "All max int"},
+//        {[] { return 0; }, "All zeros"},
+//        {[] { return std::numeric_limits<unsigned int>::max(); }, "All max int"},
         {[] {
             static unsigned int upto = 0U;
             return ++upto;
@@ -46,7 +46,7 @@ int main() {
         b.sort(numCores); // ensure the cache is fair for each test
 
         // potentially could do i *= 2, not ++i
-        for (auto currentCores = 4U; currentCores <= numCores; ++currentCores) {
+        for (auto currentCores = 1U; currentCores <= numCores; ++currentCores) {
             std::cout << "Testing " << desc << " with " << currentCores << " core(s)" << std::endl;
             results << desc << ',' << currentCores;
             for (auto i = 0U; i < numreps; ++i) {
@@ -58,6 +58,7 @@ int main() {
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::high_resolution_clock::now() - start
                 );
+                std::cout << ms.count() << std::endl;
                 results << ',' << ms.count();
             }
             results << std::endl;
