@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <string>
 #include <iostream>
 #include <thread>
 
@@ -39,6 +40,12 @@ bool aLessB(const unsigned int& x, const unsigned int& y, unsigned int pow) {
         return a < b;
 }
 
+bool compare(const unsigned int& x, const unsigned int& y) {
+    std::string s_x = std::to_string(x);
+    std::string s_y = std::to_string(y);
+    return s_x < s_y;
+}
+
 void BucketSort::sort(unsigned int numCores) {
     // use a map as buckets
     std::map<unsigned int, std::vector<unsigned int>> buckets;
@@ -63,7 +70,7 @@ void BucketSort::sort(unsigned int numCores) {
     auto sortFunc = [&buckets] (std::vector<unsigned int> bucket_list) {
         for (auto& i : bucket_list) {
             std::sort(buckets[i].begin(), buckets[i].end(), [] (const unsigned int& x, const unsigned int& y){
-                return aLessB(x,y,0);
+                return compare(x,y);
             } );
         }
     };
@@ -83,6 +90,9 @@ void BucketSort::sort(unsigned int numCores) {
         auto min_index = std::min_element(l_size.begin(),l_size.end()) - l_size.begin();
         l[min_index].push_back(i.first);
         l_size[min_index] += i.second.size();
+    }
+    for (auto& i : l_size) {
+        std::cout << "bucket number: " << i << std::endl;
     }
     // start each thread
     for (auto& i : l) {
