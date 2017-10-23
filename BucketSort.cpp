@@ -26,13 +26,16 @@ void BucketSort::sort(unsigned int numCores) {
         auto num = numbersToSort.back();
         numbersToSort.pop_back();
         auto first_digit = num;
-        // get first two digit
+        // get first two digit as the bucket to put
         while (first_digit >= 100) {
             first_digit /= 10;
         }
-        // if only one digit, regard this number as number * 10
+        // if only one digit, put it into (number * 10) bucket (0 put into first bucket which is 10)
         if (first_digit < 10) {
-            first_digit *= 10;
+            if (first_digit == 0)
+                first_digit = 10;
+            else
+                first_digit *= 10;
         }
         // create bucket if not exists, and put the number into bucket
         if ( buckets.find(first_digit) == buckets.end() ) {
