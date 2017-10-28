@@ -11,11 +11,43 @@ typedef std::pair<unsigned int, std::vector<unsigned int>> pair;
 typedef std::pair<const unsigned int, std::vector<unsigned int>> pair_c;
 
 // compare two unsigned integer in lexicographic order
-bool compare(const unsigned int& x, const unsigned int& y) {
-    std::string s_x = std::to_string(x);
-    std::string s_y = std::to_string(y);
-    return s_x < s_y;
-}
+void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens) {
+    if (target_v.size() <= 1)
+        return;
+    std::map<unsigned int, std::vector<unsigned int>> buckets;
+    std::vector<unsigned int> first_bucket;
+    while (!target_v.empty()) {
+        // get number
+        auto num = target_v.back();
+        target_v.pop_back();
+        auto digit = num;
+        // get first two digit as the bucket to put
+        if (digit < tens) {
+            digit = -1;
+        } else {
+            while (digit >= tens) {
+                digit /= 10;
+            }
+        }
+        if (digit != -1) {
+            digit %= 10;
+            if (buckets.find(digit) == buckets.end()) {
+                buckets.insert(pair(digit, std::vector<unsigned int>()));
+            }
+            // put the number into bucket
+            buckets.at(digit).push_back(num);
+        } else
+            first_bucket.push_back(num);
+    }
+    for (auto& i : buckets) {
+        if (i.first != -1)
+            msd_radix_sort(i.second, tens*10);
+    }
+    target_v.insert(target_v.end(), first_bucket.begin(), first_bucket.end());
+    for (auto& i : buckets) {
+        target_v.insert(target_v.end(), i.second.begin(), i.second.end());
+    }
+};
 
 void BucketSort::sort(unsigned int numCores) {
     // use a map as buckets
@@ -27,15 +59,8 @@ void BucketSort::sort(unsigned int numCores) {
         numbersToSort.pop_back();
         auto first_digit = num;
         // get first two digit as the bucket to put
-        while (first_digit >= 100) {
+        while (first_digit >= 10) {
             first_digit /= 10;
-        }
-        // if only one digit, put it into (number * 10) bucket (0 put into first bucket which is 10)
-        if (first_digit < 10) {
-            if (first_digit == 0)
-                first_digit = 10;
-            else
-                first_digit *= 10;
         }
         // create bucket if not exists, and put the number into bucket
         if ( buckets.find(first_digit) == buckets.end() ) {
@@ -47,9 +72,7 @@ void BucketSort::sort(unsigned int numCores) {
     // lambda function for a single thread, sort each bucket for this thread
     auto sortFunc = [&buckets] (std::vector<unsigned int> bucket_list) {
         for (auto& i : bucket_list) {
-            std::sort(buckets[i].begin(), buckets[i].end(), [] (const unsigned int& x, const unsigned int& y){
-                return compare(x,y);
-            } );
+            msd_radix_sort(buckets[i], 10);
         }
     };
     // store the location of buckets for each thread
@@ -79,6 +102,7 @@ void BucketSort::sort(unsigned int numCores) {
     }
     // combine the sorted buckets
     for (auto& i : buckets) {
+        std::cout << i.first << std::endl;
         numbersToSort.insert(numbersToSort.end(), i.second.begin(), i.second.end());
     }
 }
