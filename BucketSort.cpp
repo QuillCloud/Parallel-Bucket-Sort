@@ -96,6 +96,9 @@ void BucketSort::sort(unsigned int numCores) {
         l[min_index].push_back(i.first);
         l_size[min_index] += i.second.size();
     }
+    for (auto& i : l_size) {
+        std::cout << i << std::endl;
+    }
     // start each thread
     for (auto& i : l) {
         containerOfThreads.emplace_back(std::thread(sortFunc, i));
