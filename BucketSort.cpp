@@ -12,8 +12,6 @@ typedef std::pair<const unsigned int, std::vector<unsigned int>> pair_c;
 
 // compare two unsigned integer in lexicographic order
 void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens) {
-    std::cout << tens << std::endl;
-    std::cout << "\n" << std::endl;
     if (target_v.size() <= 1)
         return;
     std::map<unsigned int, std::vector<unsigned int>> buckets;
@@ -24,10 +22,10 @@ void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens
         target_v.pop_back();
         auto digit = num;
         // get first two digit as the bucket to put
-        if (digit < tens) {
+        if (digit < std::round(std::pow(10,tens))) {
             first_bucket.push_back(num);
         } else {
-            while (digit >= tens) {
+            while (digit >= std::round(std::pow(10,tens))) {
                 digit /= 10;
             }
             digit %= 10;
@@ -39,12 +37,13 @@ void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens
         }
     }
     for (auto& i : buckets) {
-        msd_radix_sort(i.second, tens*10);
+        msd_radix_sort(i.second, tens+1);
     }
     target_v.insert(target_v.end(), first_bucket.begin(), first_bucket.end());
     for (auto& i : buckets) {
         target_v.insert(target_v.end(), i.second.begin(), i.second.end());
     }
+    return;
 };
 
 void BucketSort::sort(unsigned int numCores) {
@@ -70,7 +69,7 @@ void BucketSort::sort(unsigned int numCores) {
     // lambda function for a single thread, sort each bucket for this thread
     auto sortFunc = [&buckets] (std::vector<unsigned int> bucket_list) {
         for (auto& i : bucket_list) {
-            msd_radix_sort(buckets[i], 10);
+            msd_radix_sort(buckets[i], 1);
         }
     };
     // store the location of buckets for each thread
