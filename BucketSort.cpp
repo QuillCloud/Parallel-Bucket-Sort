@@ -4,7 +4,6 @@
 #include <cmath>
 #include <map>
 #include <string>
-#include <iostream>
 #include <thread>
 
 // define type pair
@@ -28,7 +27,7 @@ void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned int& tens
         auto digit = num;
         // get digit depends on 'tens', this digit is the index to determine which bucket to put the number
         // if cannot get digit, put number to first bucket
-        if (digit < std::round(std::pow(10,tens))) {
+        if (digit < std::round(std::pow(10,tens-1))) {
             first_bucket.push_back(num);
         } else {
             // get digit
