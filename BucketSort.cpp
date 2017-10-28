@@ -23,21 +23,18 @@ void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens
         auto digit = num;
         // get first two digit as the bucket to put
         if (digit < tens) {
-            digit = -1;
+            first_bucket.push_back(num);
         } else {
             while (digit >= tens) {
                 digit /= 10;
             }
-        }
-        if (const_cast<int>(digit) != -1) {
             digit %= 10;
             if (buckets.find(digit) == buckets.end()) {
                 buckets.insert(pair(digit, std::vector<unsigned int>()));
             }
             // put the number into bucket
             buckets.at(digit).push_back(num);
-        } else
-            first_bucket.push_back(num);
+        }
     }
     for (auto& i : buckets) {
         msd_radix_sort(i.second, tens*10);
