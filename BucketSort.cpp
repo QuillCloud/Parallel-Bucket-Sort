@@ -20,7 +20,7 @@ void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens
         // get number
         auto num = target_v.back();
         target_v.pop_back();
-        auto digit = num;
+        int digit = num;
         // get first two digit as the bucket to put
         if (digit < tens) {
             digit = -1;
@@ -40,8 +40,7 @@ void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens
             first_bucket.push_back(num);
     }
     for (auto& i : buckets) {
-        if (i.first != -1)
-            msd_radix_sort(i.second, tens*10);
+        msd_radix_sort(i.second, tens*10);
     }
     target_v.insert(target_v.end(), first_bucket.begin(), first_bucket.end());
     for (auto& i : buckets) {
