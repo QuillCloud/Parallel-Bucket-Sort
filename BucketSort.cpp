@@ -12,6 +12,8 @@ typedef std::pair<const unsigned int, std::vector<unsigned int>> pair_c;
 
 // compare two unsigned integer in lexicographic order
 void msd_radix_sort(std::vector<unsigned int>& target_v,const unsigned long tens) {
+    std::cout << tens << std::endl;
+    std::cout << "\n" << std::endl;
     if (target_v.size() <= 1)
         return;
     std::map<unsigned int, std::vector<unsigned int>> buckets;
