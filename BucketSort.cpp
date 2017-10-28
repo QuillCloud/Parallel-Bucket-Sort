@@ -56,15 +56,22 @@ void BucketSort::sort(unsigned int numCores) {
         numbersToSort.pop_back();
         auto first_digit = num;
         // get first two digit as the bucket to put
-        while (first_digit >= 10) {
+        while (first_digit >= 100) {
             first_digit /= 10;
+        }
+        if (first_digit < 10 && first_digit != 0) {
+            first_digit *= 10;
         }
         // create bucket if not exists, and put the number into bucket
         if ( buckets.find(first_digit) == buckets.end() ) {
             buckets.insert(pair(first_digit, std::vector<unsigned int>()));
         }
         // put the number into bucket
-        buckets.at(first_digit).push_back(num);
+        if (num < 10 && num != 0) {
+            buckets.at(first_digit).insert(buckets.at(first_digit).begin(), num);
+        } else {
+            buckets.at(first_digit).push_back(num);
+        }
     }
     // lambda function for a single thread, sort each bucket for this thread
     auto sortFunc = [&buckets] (std::vector<unsigned int> bucket_list) {
