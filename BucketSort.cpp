@@ -61,12 +61,14 @@ void BucketSort::sort(unsigned int numCores) {
     // use a map as buckets
     std::map<unsigned int, std::vector<unsigned int>> buckets;
     // distribute numbers into buckets
+    // chose first two significant digit to determine the bucket
+    // so that each thread's total size of buckets will be more evenly
     while (!numbersToSort.empty()) {
         // get number
         auto num = numbersToSort.back();
         numbersToSort.pop_back();
         auto first_digit = num;
-        // get first two digit as the bucket to put
+        // get first two significant digit as the bucket to put
         while (first_digit >= 100) {
             first_digit /= 10;
         }
@@ -89,10 +91,10 @@ void BucketSort::sort(unsigned int numCores) {
     // lambda function for a single thread, sort each bucket for this thread
     auto sortFunc = [&buckets] (std::vector<unsigned int> bucket_list) {
         for (auto& i : bucket_list) {
-            msd_radix_sort(buckets[i], 1);
+            msd_radix_sort(buckets[i], 2);
         }
     };
-    // store the location of buckets for each thread
+    // store the index of buckets in map for each thread
     std::vector<std::vector<unsigned int>> l;
     // count total buckets' sizes for each thread
     std::vector<unsigned long> l_size;
@@ -103,7 +105,7 @@ void BucketSort::sort(unsigned int numCores) {
     }
     // store each thread
     std::vector<std::thread> containerOfThreads;
-    // distribute buckets for each thread, each time add current bucket to the thread with smallest size
+    // distribute buckets for each thread, each time add bucket to the thread with the smallest size
     for (auto& i : buckets) {
         auto min_index = std::min_element(l_size.begin(),l_size.end()) - l_size.begin();
         l[min_index].push_back(i.first);
